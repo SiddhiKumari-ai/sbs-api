@@ -5,7 +5,10 @@ const contactSchema = new mongoose.Schema({
     phone : String,
     email : String,
     address : String,
-    gender : String
+    gender : String,
+    userId : String,
+    imageId : String,
+    imageUrl : String
 })
 
 module.exports = mongoose.model('contact', contactSchema)
