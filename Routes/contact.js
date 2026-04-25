@@ -41,7 +41,7 @@ cloudinary.config({
 // })
 
 
-Router.post('/addcontact', async (req, res) => {
+Router.post('/add-contact', async (req, res) => {
     try {
 
         //console.log(req)
@@ -86,7 +86,7 @@ Router.get('/all-contact', async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1]
         const tokenData = await jwt.verify(token, process.env.SEC_KEY)
-        const allContact = await Contact.find({ userId: tokenData.userId }).select("_id fullName email phone address gender userId")  // yaha Contact matlab schema wla h jo direct mongodb se connect ho rha.. usi se data fetch krenge...
+        const allContact = await Contact.find({ userId: tokenData.userId }).select("_id fullName email phone address gender userId").populate('userId', "-password")
         res.status(200).json({
             contacts: allContact
         })
@@ -107,7 +107,7 @@ Router.get('/contactById/:id', async (req, res) => {
         const tokenData = await jwt.verify(token, process.env.SEC_KEY)
         const id = req.params.id
         //const data = await Contact.findById(id).select("fullName address")
-        const data = await Contact.find({ _id: req.params.id, userId: tokenData.userId })
+        const data = await Contact.find({ _id: req.params.id, userId: tokenData.userId }) // yaha Contact matlab schema wla h jo direct mongodb se connect ho rha.. usi se data fetch krenge...
         return res.status(200).json({
             contact: data.length > 0 ? data[0] : {}
         })
@@ -172,7 +172,7 @@ Router.delete('/:id', async (req, res) => {
     }
 })
 
-//delete many by particular category/ies
+//delete many by particular category
 Router.delete('/byGender/:g', async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1]
@@ -206,17 +206,6 @@ Router.put('/update/:id', async (req, res) => {
             })
         }
 
-        contactData["imageId"] = contactData.imageId
-        contactData["imageUrl"] = contactData.imageUrl
-
-        if (req.files) {
-            await cloudinary.uploader.destroy(contactData.imageId)
-            //const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
-            const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
-            contactData["imageId"] = uploadedResult.files.public_id
-            contactData["imageUrl"] = uploadedResult.files.secure_url
-        }
-
         const newData = ({
             fullName: req.body.fullName,
             phone: req.body.phone,
@@ -227,7 +216,16 @@ Router.put('/update/:id', async (req, res) => {
             imageId: contactData.imageId,
             imageUrl: contactData.imageUrl
         })
+        // newData["imageId"] = contactData.imageId
+        // newtData["imageUrl"] = contactData.imageUrl
 
+        if (req.files) {
+            await cloudinary.uploader.destroy(contactData.imageId)
+            //const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
+            const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
+            newData["imageId"] = uploadedResult.public_id
+            newData["imageUrl"] = uploadedResult.secure_url
+        }
 
 
         console.log(newData)
@@ -244,5 +242,27 @@ Router.put('/update/:id', async (req, res) => {
         })
     }
 })
+
+//count contact
+Router.get('/count',async(req,res)=>{
+    try
+    {
+        const token = req.headers.authorization.split(" ")[1]
+        const tokenData = await jwt.verify(token, process.env.SEC_KEY) 
+
+        const count = await Contact.countDocuments({userId:tokenData.userId})
+        res.status(200).json({
+            count:count
+        })
+    }
+    catch(err)
+    {
+        console.log(err)
+        res.status(500).json({
+            error:err
+        })
+    }
+})
+
 
 module.exports = Router
