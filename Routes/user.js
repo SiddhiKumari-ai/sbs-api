@@ -52,7 +52,7 @@ Router.post('/login',async(req,res)=>{
     try
     {
         const user = await User.find({email:req.body.email}) //array k andar ek object k form me ek data...
-        console.log(user)
+        //console.log(user)
         if(user.length == 0)
         {
             return res.status(500).json({

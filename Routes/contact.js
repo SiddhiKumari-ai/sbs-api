@@ -66,7 +66,7 @@ Router.post('/add-contact', async (req, res) => {
         //console.log(newContact)
         // const newContact = new Contact(req.body)
         const newData = await newContact.save()
-        console.log(newData)
+        //console.log(newData)
         res.status(200).json({
             result: newData
         })
@@ -228,7 +228,7 @@ Router.put('/update/:id', async (req, res) => {
         }
 
 
-        console.log(newData)
+        //console.log(newData)
         const updatedContact = await Contact.findByIdAndUpdate(req.params.id, newData, { new: true })
         res.status(200).json({
             updatedContact: updatedContact
