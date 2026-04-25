@@ -26,7 +26,7 @@ Router.post('/signup', async(req,res)=>{
             password : hash
         })
 
-        //console.log(newUser)
+        console.log(newUser)
         const result = await newUser.save()
         res.status(200).json({
             msg : "account created",
