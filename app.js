@@ -1,4 +1,5 @@
 require('dotenv').config()
+const cors = require('cors')
 const express = require('express')
 const app = express()
 const userRouter = require('./Routes/user')
@@ -23,7 +24,7 @@ const connectwithdatabase = async()=>{
     try
     {
         await mongoose.connect(process.env.MONGODB_URL)
-        console.log("Connected to Database")
+        console.log("Connected with Database")
     }
     catch(err)
     {
@@ -33,6 +34,7 @@ const connectwithdatabase = async()=>{
 }
 
 connectwithdatabase()
+app.use(cors());
 
 app.use(fileUpload({
     useTempFiles:true,
