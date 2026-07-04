@@ -80,7 +80,8 @@ Router.post('/login',async(req,res)=>{
     )
      
     res.status(200).json({
-        token:appToken
+        token:appToken,
+        fullName:user[0].fullName
     })
 
 
