@@ -219,7 +219,7 @@ Router.put('/update/:id', async (req, res) => {
         // newData["imageId"] = contactData.imageId
         // newtData["imageUrl"] = contactData.imageUrl
 
-        if (req.files) {
+        if (req.files && req.files.photo) {
             await cloudinary.uploader.destroy(contactData.imageId)
             //const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
             const uploadedResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
